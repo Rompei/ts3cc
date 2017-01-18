@@ -2,5 +2,6 @@
 
 Tool for teamspeak channel visualization.
 
-![example](art/screenshot.png "example")# ts3cc
+This is an example of visualization.
 
+![example](art/screenshot.png "example")
