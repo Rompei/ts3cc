@@ -109,17 +109,14 @@ func (chs Channels) Sort() {
 type ChannelMap map[string]*Channel
 
 func (cm ChannelMap) MakeSlice() Channels {
-	for _, v := range cm {
-		if v.PID != "0" {
-			if parent, ok := cm[v.PID]; ok {
-				parent.ChildChannels = append(parent.ChildChannels, v)
-			}
-		}
-	}
 	var firstChannels Channels
 	for _, v := range cm {
 		if v.PID == "0" {
 			firstChannels = append(firstChannels, v)
+		} else {
+			if parent, ok := cm[v.PID]; ok {
+				parent.ChildChannels = append(parent.ChildChannels, v)
+			}
 		}
 	}
 	return firstChannels

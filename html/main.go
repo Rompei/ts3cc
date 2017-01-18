@@ -7,12 +7,10 @@ import (
 	"github.com/Rompei/ts3cc"
 )
 
+var cl *ts3cc.TS3CC
+var err error
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	cl, err := ts3cc.NewTS3CC("localhost:10011", "testuser", "I2PfW1D2", 1)
-	if err != nil {
-		panic(err)
-	}
-	defer cl.Close()
 	server, err := cl.GetServerInfo()
 	if err != nil {
 		panic(err)
@@ -28,6 +26,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	cl, err = ts3cc.NewTS3CC("localhost:10011", "testuser", "I2PfW1D2", 1)
+	if err != nil {
+		panic(err)
+	}
+	defer cl.Close()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":3000", nil)
