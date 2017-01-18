@@ -86,7 +86,6 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 	}); err != nil {
 		panic(err)
 	}
-	cc.client.Close()
 	server.Channels = channelMap.MakeSlice()
 	server.SortChannels()
 	return server, nil
