@@ -17,11 +17,15 @@
       {{ if .IsAway }}
       <img src="/static/images/client_away.png" width="16" height="16">
       {{ else }}
-        {{ if .IsMicMuted }}
-          <img src="/static/images/client_mic_muted.png" width="16" height="16">
-        {{ end }}
-        {{ if .IsSpeakerMuted }}
-          <img src="/static/images/client_muted.png" width="16" height="16">
+        {{ if or .IsMicMuted .IsSpeakerMuted }}
+          {{ if .IsMicMuted }}
+            <img src="/static/images/client_mic_muted.png" width="16" height="16">
+          {{ end }}
+          {{ if .IsSpeakerMuted }}
+            <img src="/static/images/client_snd_muted.png" width="16" height="16">
+          {{ end }}
+        {{ else }}
+          <img src="/static/images/client_idle.png" width="16" height="16">
         {{ end }}
       {{ end }}
       {{ .Nickname }}
