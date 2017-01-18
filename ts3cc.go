@@ -45,7 +45,6 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 	}
 	channelMap := make(ChannelMap)
 	if err := cc.client.WalkChannels(func(i int, ch map[string]string) {
-		log.Printf("cid: %s", ch["cid"])
 		c := ts3.Command{
 			Command: "channelinfo",
 			Params: map[string][]string{
@@ -56,8 +55,6 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 		if err != nil {
 			panic(err)
 		}
-		showResponse(&response)
-		log.Println()
 		channel, err := NewChannel(ch["cid"], response.Params[0])
 		if err != nil {
 			panic(err)
@@ -68,8 +65,6 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 	}
 
 	if err := cc.client.WalkClients(func(i int, cl map[string]string) {
-		log.Printf("clID: %s", cl["clid"])
-		log.Println(cl)
 		if cl["client_type"] == "0" {
 			c := ts3.Command{
 				Command: "clientinfo",
@@ -81,8 +76,6 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 			if err != nil {
 				panic(err)
 			}
-			showResponse(&response)
-			log.Println()
 			client, err := NewClient(cl["clid"], response.Params[0])
 			if err != nil {
 				panic(err)

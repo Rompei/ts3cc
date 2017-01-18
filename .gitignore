@@ -32,3 +32,5 @@ _testmain.go
 vendor/
 
 sampleinfo.txt
+html/html
+html/images
