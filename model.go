@@ -31,6 +31,7 @@ type Channel struct {
 	ChannelName   string   `json:"channelName"`
 	ChannelOrder  int      `json:"channelOrder"`
 	IsLocked      bool     `json:"isLocked"`
+	IsDefault     bool     `json:"isDefault"`
 	Clients       []Client `json:"clients"`
 	ChildChannels Channels `json:"childChannels"`
 }
@@ -56,9 +57,16 @@ func NewChannel(cid string, param map[string]string) (*Channel, error) {
 	if !ok {
 		return nil, errors.New("password flag is not found")
 	}
-	var isLocked bool
+	def, ok := param["channel_flag_default"]
+	if !ok {
+		return nil, errors.New("channel_flag_default is not found")
+	}
+	var isLocked, isDefault bool
 	if pass == "1" {
 		isLocked = true
+	}
+	if def == "1" {
+		isDefault = true
 	}
 	return &Channel{
 		CID:          cid,
@@ -66,6 +74,7 @@ func NewChannel(cid string, param map[string]string) (*Channel, error) {
 		ChannelName:  channelName,
 		ChannelOrder: channelOrder,
 		IsLocked:     isLocked,
+		IsDefault:    isDefault,
 	}, nil
 }
 
@@ -123,6 +132,8 @@ type Client struct {
 	IsAway         bool   `json:"isAway"`
 	IsMicMuted     bool   `json:"isMicMuted"`
 	IsSpeakerMuted bool   `json:"isSpeakerMuted"`
+	IsServerAdmin  bool   `json:"isServerAdmin"`
+	IsChannelAdmin bool   `json:"isChannelAdmin"`
 }
 
 func NewClient(clid string, param map[string]string) (*Client, error) {
@@ -134,7 +145,7 @@ func NewClient(clid string, param map[string]string) (*Client, error) {
 	if !ok {
 		return nil, errors.New("client_nickname is not found")
 	}
-	var isMicMuted, isSpeakerMuted, isAway bool
+	var isMicMuted, isSpeakerMuted, isAway, isServerAdmin, isChannelAdmin bool
 	inputMuted, ok := param["client_input_muted"]
 	if !ok {
 		return nil, errors.New("client_input_muted is not found")
@@ -156,6 +167,20 @@ func NewClient(clid string, param map[string]string) (*Client, error) {
 	if away == "1" {
 		isAway = true
 	}
+	channelGroup, ok := param["client_channel_group_id"]
+	if !ok {
+		return nil, errors.New("client_channel_group_id is not found")
+	}
+	if channelGroup == "5" {
+		isChannelAdmin = true
+	}
+	serverGroup, ok := param["client_servergroups"]
+	if !ok {
+		return nil, errors.New("client_servergroups is not found")
+	}
+	if serverGroup == "6" {
+		isServerAdmin = true
+	}
 
 	return &Client{
 		cid,
@@ -164,5 +189,7 @@ func NewClient(clid string, param map[string]string) (*Client, error) {
 		isAway,
 		isMicMuted,
 		isSpeakerMuted,
+		isServerAdmin,
+		isChannelAdmin,
 	}, nil
 }
