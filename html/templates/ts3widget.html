@@ -1,7 +1,7 @@
 {{ define "ts3widget" }}
 <div>
-  <p>{{ .ServerName }}</p>
-  <ul>
+  <p><img src="/static/images/host.png" width="16" height="16">{{ .ServerName }}</p>
+  <ul class="tree">
     {{ range .Channels }}
       {{ template "channel" . }}
     {{ end }}

@@ -1,8 +1,37 @@
 {{ define "channel" }}
-<li>{{ .ChannelName }}
+<li>  {{ if .IsLocked }}
+  <img src="/static/images/channel_pass.png" width="16" height="16">
+  {{ else }}
+  <img src="/static/images/channel_open.png" width="16" height="16">
+  {{ end }}
+  {{ .ChannelName }}
+  {{ if .IsDefault }}
+  <img src="/static/images/channel_flag_default.png" width="16" height="16">
+  {{ end }}
+  {{ if .IsLocked }}
+  <img src="/static/images/channel_flag_password.png" width="16" height="16">
+  {{ end }}
 	<ul>
 		{{ range .Clients }} 
-		<li>{{ .Nickname }}</li>
+		<li>
+      {{ if .IsAway }}
+      <img src="/static/images/client_away.png" width="16" height="16">
+      {{ else }}
+        {{ if .IsMicMuted }}
+          <img src="/static/images/client_mic_muted.png" width="16" height="16">
+        {{ end }}
+        {{ if .IsSpeakerMuted }}
+          <img src="/static/images/client_muted.png" width="16" height="16">
+        {{ end }}
+      {{ end }}
+      {{ .Nickname }}
+      {{ if .IsServerAdmin }}
+      <img src="/static/images/group_icon_300.png" width="16" height="16">
+      {{ end }}
+      {{ if .IsChannelAdmin }}
+      <img src="/static/images/group_icon_100.png" width="16" height="16">
+      {{ end }}
+    </li>
 		{{ end }}
 		{{ range .ChildChannels }}
 			{{ template "channel" . }}
