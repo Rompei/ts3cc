@@ -7,35 +7,38 @@ import (
 )
 
 type TS3CC struct {
-	client *ts3.Client
+	addr     string
+	id       string
+	pass     string
+	serverID int
 }
 
 func NewTS3CC(addr, id, pass string, server int) (*TS3CC, error) {
-	client, err := ts3.NewClient(addr)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = client.Exec(ts3.Login(id, pass))
-	if err != nil {
-		return nil, err
-	}
-	_, err = client.Exec(ts3.Use(server))
-	if err != nil {
-		panic(err)
-	}
 	return &TS3CC{
-		client: client,
+		addr,
+		id,
+		pass,
+		server,
 	}, nil
 }
 
-func (cc *TS3CC) Close() {
-	cc.client.Close()
-}
-
 func (cc *TS3CC) GetServerInfo() (*Server, error) {
+	client, err := ts3.NewClient(cc.addr)
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
 
-	response, err := cc.client.Exec(ts3.Command{Command: "serverinfo"})
+	_, err = client.Exec(ts3.Login(cc.id, cc.pass))
+	if err != nil {
+		return nil, err
+	}
+	_, err = client.Exec(ts3.Use(cc.serverID))
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := client.Exec(ts3.Command{Command: "serverinfo"})
 	if err != nil {
 		return nil, err
 	}
@@ -44,14 +47,14 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 		return nil, err
 	}
 	channelMap := make(ChannelMap)
-	if err := cc.client.WalkChannels(func(i int, ch map[string]string) {
+	if err := client.WalkChannels(func(i int, ch map[string]string) {
 		c := ts3.Command{
 			Command: "channelinfo",
 			Params: map[string][]string{
 				"cid": []string{ch["cid"]},
 			},
 		}
-		response, err := cc.client.Exec(c)
+		response, err := client.Exec(c)
 		if err != nil {
 			panic(err)
 		}
@@ -64,7 +67,7 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 		panic(err)
 	}
 
-	if err := cc.client.WalkClients(func(i int, cl map[string]string) {
+	if err := client.WalkClients(func(i int, cl map[string]string) {
 		if cl["client_type"] == "0" {
 			c := ts3.Command{
 				Command: "clientinfo",
@@ -72,7 +75,7 @@ func (cc *TS3CC) GetServerInfo() (*Server, error) {
 					"clid": []string{cl["clid"]},
 				},
 			}
-			response, err := cc.client.Exec(c)
+			response, err := client.Exec(c)
 			if err != nil {
 				panic(err)
 			}
