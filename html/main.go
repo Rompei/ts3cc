@@ -30,7 +30,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer cl.Close()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":3000", nil)

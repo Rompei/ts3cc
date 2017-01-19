@@ -9,7 +9,6 @@ func TestTS3CC(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer cl.Close()
 
 	server, err := cl.GetServerInfo()
 	if err != nil {
